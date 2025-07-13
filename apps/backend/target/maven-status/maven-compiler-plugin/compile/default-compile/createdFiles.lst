@@ -1,0 +1,8 @@
+com/trendz/mvp/model/Product.class
+com/trendz/mvp/service/AIService.class
+com/trendz/mvp/model/AnalyzeProductResponse.class
+com/trendz/mvp/model/AnalyzeProductRequest.class
+com/trendz/mvp/MvpBackendApplication.class
+com/trendz/mvp/service/ProductService.class
+com/trendz/mvp/controller/AIController.class
+com/trendz/mvp/controller/ProductController.class

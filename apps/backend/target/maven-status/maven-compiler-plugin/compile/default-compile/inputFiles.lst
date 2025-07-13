@@ -1,0 +1,8 @@
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/MvpBackendApplication.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/controller/AIController.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/controller/ProductController.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/model/AnalyzeProductRequest.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/model/AnalyzeProductResponse.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/model/Product.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/service/AIService.java
+/Users/pranayparuchuri/workspace/Market-Trendz/trending-products-mvp/apps/backend/src/main/java/com/trendz/mvp/service/ProductService.java
