@@ -55,6 +55,10 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
         <!-- Add missing dependencies for REST controllers and Java annotations -->
         <dependency>
             <groupId>javax.annotation</groupId>
