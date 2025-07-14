@@ -12,12 +12,14 @@ import java.util.List;
 @RequestMapping("/api/trending-products")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
-    private final ProductService productService;
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-    @GetMapping
-    public List<Product> getTrendingProducts() {
-        return productService.getTrendingProducts();
-    }
+  private final ProductService productService;
+
+  public ProductController(ProductService productService) {
+    this.productService = productService;
+  }
+
+  @GetMapping
+  public List<Product> getTrendingProducts() {
+    return productService.getTrendingProducts();
+  }
 }

@@ -29,3 +29,10 @@ apps/backend/out/
 *.tmp
 *.bak
 *.swp
+*.gz
+apps/backend/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+apps/frontend/.next/cache/webpack/server-development/index.pack.gz.old
+apps/frontend/.next/cache/webpack/client-development/index.pack.gz.old
+apps/frontend/.next/cache/webpack/client-development/index.pack.gz.old
+apps/frontend/.next/trace
+apps/frontend/.next/trace
