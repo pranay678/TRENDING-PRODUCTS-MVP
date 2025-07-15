@@ -19,6 +19,7 @@ const ProductSearchPage = () => {
     category: '',
     wholesaleOnly: false,
   });
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const fetchProducts = async (search = '', currentFilters = filters) => {
     setLoading(true);
@@ -53,6 +54,11 @@ const ProductSearchPage = () => {
 
   useEffect(() => {
     fetchProducts(); // Fetch all products on initial load
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSearch = async (e) => {
@@ -73,7 +79,7 @@ const ProductSearchPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 pb-10">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
         <h1 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 tracking-tight drop-shadow">
           Trending Products
         </h1>
@@ -196,6 +202,16 @@ const ProductSearchPage = () => {
           </div>
         )}
       </div>
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors"
+          aria-label="Back to Top"
+        >
+          ↑
+        </button>
+      )}
     </div>
   );
 };

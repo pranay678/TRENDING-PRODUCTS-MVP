@@ -42,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const profitMargin = getProfitMargin();
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:scale-[1.03] transition-transform duration-200 flex flex-col h-full">
       {/* Product Image */}
       <div className="relative h-48 bg-gray-200">
         <img
@@ -61,8 +61,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Product Info */}
-      <div className="p-4">
-        <h3 className="font-semibold text-lg mb-2 text-gray-800 line-clamp-2">
+      <div className="p-4 flex flex-col flex-1">
+        <h3 className="font-semibold text-lg mb-2 text-gray-800 line-clamp-2 truncate">
           {product.name}
         </h3>
 
@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               </div>
             )}
             {product.wholesaleSupplier && (
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-500 mt-1 truncate">
                 Supplier: {product.wholesaleSupplier}
               </div>
             )}
@@ -124,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto">
           {product.productUrl && (
             <a
               href={product.productUrl}
