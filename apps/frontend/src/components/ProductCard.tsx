@@ -1,38 +1,149 @@
 import React from 'react';
 
 interface ProductCardProps {
-  image: string;
-  title: string;
-  price: number;
-  platform: string;
-  onInvestClick: () => void;
+  product: {
+    id: number;
+    name: string;
+    price: number;
+    currency?: string;
+    platform: string;
+    imageUrl: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    wholesalePrice?: number;
+    wholesaleSupplier?: string;
+    trendScore?: number;
+    searchVolume?: number;
+    category?: string;
+    productUrl?: string;
+  };
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  image,
-  title,
-  price,
-  platform,
-  onInvestClick,
-}) => (
-  <div className="bg-white rounded-xl shadow-lg p-5 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-2xl border border-gray-100">
-    <div className="w-32 h-32 mb-3 flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
-      <img src={image} alt={title} className="object-contain w-full h-full" />
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const formatPrice = (price: number, currency: string = 'INR') => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const getProfitMargin = () => {
+    if (product.wholesalePrice && product.price) {
+      const margin = product.price - product.wholesalePrice;
+      const marginPercentage = (margin / product.wholesalePrice) * 100;
+      return { margin, marginPercentage };
+    }
+    return null;
+  };
+
+  const profitMargin = getProfitMargin();
+
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      {/* Product Image */}
+      <div className="relative h-48 bg-gray-200">
+        <img
+          src={product.imageUrl || '/placeholder-product.jpg'}
+          alt={product.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder-product.jpg';
+          }}
+        />
+        {product.trendScore && (
+          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+            🔥 {product.trendScore}
+          </div>
+        )}
+      </div>
+
+      {/* Product Info */}
+      <div className="p-4">
+        <h3 className="font-semibold text-lg mb-2 text-gray-800 line-clamp-2">
+          {product.name}
+        </h3>
+
+        {/* Price Information */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl font-bold text-green-600">
+              {formatPrice(product.price, product.currency)}
+            </span>
+            <span className="text-sm text-gray-500">{product.platform}</span>
+          </div>
+        </div>
+
+        {/* Wholesale Information */}
+        {product.wholesalePrice && (
+          <div className="mb-3 p-3 bg-blue-50 rounded-lg">
+            <div className="text-sm text-gray-600 mb-1">Wholesale Price:</div>
+            <div className="text-lg font-semibold text-blue-600">
+              {formatPrice(product.wholesalePrice, product.currency)}
+            </div>
+            {profitMargin && (
+              <div className="text-xs text-green-600 mt-1">
+                Profit: {formatPrice(profitMargin.margin, product.currency)} (
+                {profitMargin.marginPercentage.toFixed(1)}%)
+              </div>
+            )}
+            {product.wholesaleSupplier && (
+              <div className="text-xs text-gray-500 mt-1">
+                Supplier: {product.wholesaleSupplier}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Geographic Information */}
+        {(product.country || product.state || product.city) && (
+          <div className="mb-3 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
+              📍{' '}
+              {[product.city, product.state, product.country]
+                .filter(Boolean)
+                .join(', ')}
+            </div>
+          </div>
+        )}
+
+        {/* Category and Metrics */}
+        <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+          {product.category && (
+            <span className="bg-gray-100 px-2 py-1 rounded">
+              {product.category}
+            </span>
+          )}
+          {product.searchVolume && (
+            <span className="flex items-center gap-1">
+              📊 {product.searchVolume.toLocaleString()} searches
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          {product.productUrl && (
+            <a
+              href={product.productUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+            >
+              View Product
+            </a>
+          )}
+          {product.wholesalePrice && (
+            <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors text-sm font-medium">
+              Contact Supplier
+            </button>
+          )}
+        </div>
+      </div>
     </div>
-    <h3 className="font-semibold text-lg text-gray-800 mb-1 text-center line-clamp-2">
-      {title}
-    </h3>
-    <p className="text-base font-bold text-indigo-600 mb-1">₹{price}</p>
-    <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded mb-2">
-      {platform}
-    </span>
-    <button
-      className="mt-2 w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium py-2 rounded-lg shadow hover:from-blue-600 hover:to-indigo-600 transition-colors"
-      onClick={onInvestClick}
-    >
-      Should I Invest?
-    </button>
-  </div>
-);
+  );
+};
 
 export default ProductCard;
