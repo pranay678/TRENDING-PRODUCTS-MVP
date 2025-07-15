@@ -1,113 +1,51 @@
 package com.trendz.mvp.controller;
 
 import com.trendz.mvp.model.Product;
-import com.trendz.mvp.service.ProductService;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.trendz.mvp.model.Trend;
+import com.trendz.mvp.service.AmazonProductService;
+import com.trendz.mvp.service.JungleScoutService;
+import com.trendz.mvp.service.GoogleTrendsService;
+import com.trendz.mvp.service.WholesaleSupplierService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Mono;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
-import java.util.Collections;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/trending-products")
 @CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
-  private final ProductService productService;
-
-  public ProductController(ProductService productService) {
-    this.productService = productService;
-  }
+  @Autowired private AmazonProductService amazonProductService;
+  @Autowired private JungleScoutService jungleScoutService;
+  @Autowired private GoogleTrendsService googleTrendsService;
+  @Autowired private WholesaleSupplierService wholesaleSupplierService;
 
   @GetMapping("/search")
-  public Mono<ResponseEntity<HashMap<String, Object>>> searchProducts(
-      @RequestParam(required = false) String query,
+  public ResponseEntity<?> searchProducts(
+      @RequestParam String keyword,
       @RequestParam(required = false) String country,
-      @RequestParam(required = false) String state,
-      @RequestParam(required = false) String city,
-      @RequestParam(required = false) String region,
       @RequestParam(required = false) BigDecimal maxPrice,
-      @RequestParam(required = false) String currency,
-      @RequestParam(required = false) String category,
-      @RequestParam(required = false) Boolean wholesaleOnly) {
-    
-    // Default to INR and 500 INR if not specified
-    final String finalCurrency = currency != null ? currency : "INR";
-    final BigDecimal finalMaxPrice = maxPrice != null ? maxPrice : new BigDecimal("500");
-    final String finalCountry = country;
-    final String finalState = state;
-    final String finalCity = city;
-    final String finalCategory = category;
-    final Boolean finalWholesaleOnly = wholesaleOnly;
-    
-    // For now, just return products from the database
-    return productService.getAllProducts()
-      .map(products -> {
-        List<Product> filteredProducts = products.stream()
-          .filter(product -> {
-            // Filter by price
-            if (product.getPrice() != null && product.getPrice().compareTo(finalMaxPrice) > 0) {
-              return false;
-            }
-            // Filter by country
-            if (finalCountry != null && !finalCountry.isEmpty() && !finalCountry.equals(product.getCountry())) {
-              return false;
-            }
-            // Filter by state
-            if (finalState != null && !finalState.isEmpty() && !finalState.equals(product.getState())) {
-              return false;
-            }
-            // Filter by city
-            if (finalCity != null && !finalCity.isEmpty() && !finalCity.equals(product.getCity())) {
-              return false;
-            }
-            // Filter by category
-            if (finalCategory != null && !finalCategory.isEmpty() && !finalCategory.equals(product.getCategory())) {
-              return false;
-            }
-            // Filter by wholesale
-            if (finalWholesaleOnly != null && finalWholesaleOnly && product.getWholesalePrice() == null) {
-              return false;
-            }
-            return true;
-          })
-          .collect(Collectors.toList());
+      @RequestParam(required = false) String region) {
+    List<Product> amazonProducts = amazonProductService.searchAmazonProducts(keyword, country, maxPrice);
+    List<Product> jungleProducts = jungleScoutService.searchJungleScoutProducts(keyword);
+    List<Product> indiamartProducts = wholesaleSupplierService.searchIndiaMart(keyword, region);
+    List<Product> alibabaProducts = wholesaleSupplierService.searchAlibaba(keyword, region);
 
-        // Sort by trend score
-        filteredProducts.sort((p1, p2) -> {
-          Integer score1 = p1.getTrendScore() != null ? p1.getTrendScore() : 0;
-          Integer score2 = p2.getTrendScore() != null ? p2.getTrendScore() : 0;
-          return score2.compareTo(score1);
-        });
+    // Merge and deduplicate products as needed
+    List<Product> allProducts = new ArrayList<>();
+    allProducts.addAll(amazonProducts);
+    allProducts.addAll(jungleProducts);
+    allProducts.addAll(indiamartProducts);
+    allProducts.addAll(alibabaProducts);
 
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("query", query);
-        
-        Map<String, Object> filters = new HashMap<>();
-        filters.put("country", finalCountry);
-        filters.put("state", finalState);
-        filters.put("city", finalCity);
-        filters.put("region", region);
-        filters.put("maxPrice", finalMaxPrice);
-        filters.put("currency", finalCurrency);
-        filters.put("category", finalCategory);
-        filters.put("wholesaleOnly", finalWholesaleOnly);
-        result.put("filters", filters);
-        
-        result.put("timestamp", Instant.now().toString());
-        result.put("products", filteredProducts);
-        result.put("trends", Collections.emptyList()); // Empty trends for now
-        result.put("totalProducts", filteredProducts.size());
-        return ResponseEntity.ok(result);
-      });
+    // Fetch trends
+    List<Trend> trends = googleTrendsService.getTrends(keyword, region);
+
+    Map<String, Object> result = new HashMap<>();
+    result.put("products", allProducts);
+    result.put("trends", trends);
+    return ResponseEntity.ok(result);
   }
 
   @GetMapping("/trending")
